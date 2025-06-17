@@ -91,7 +91,47 @@ namespace VideoMatrixSystem.Domain.Repository
 
         public List<Receiver> GetAll()
         {
+            InitializeDatabase();
+
             return _context.Receivers.ToList();
+        }
+
+        private async void InitializeDatabase()
+        {
+            try
+            {
+                if (_context.Receivers.Count() > 0)
+                {
+                    return;
+                }
+
+                List<Receiver> receivers = new List<Receiver>()
+                {
+                    new Receiver("R01", "1.2.3.4", "www.image.es", Common.DeviceState.Offline),
+                    new Receiver("R02", "432.23.2", "www.aaa.es", Common.DeviceState.StandBy),
+                    new Receiver("R03", "123.54.6", "www.bbb.es", Common.DeviceState.Active),
+                    new Receiver("R04", "532.63.3", "www.ccc.es", Common.DeviceState.StandBy),
+                    new Receiver("R05", "16.53.12", "www.ddd.es", Common.DeviceState.Offline),
+                    new Receiver("R06", "192.168.1.10", "www.image01.es", Common.DeviceState.Offline),
+                    new Receiver("R07", "10.0.0.23", "www.aaa01.es", Common.DeviceState.StandBy),
+                    new Receiver("R08", "172.16.5.6", "www.bbb01.es", Common.DeviceState.Active),
+                    new Receiver("R09", "192.168.0.33", "www.ccc01.es", Common.DeviceState.StandBy),
+                    new Receiver("R10", "10.10.10.12", "www.ddd01.es", Common.DeviceState.Offline),
+                    new Receiver("R11", "192.168.1.11", "www.image02.es", Common.DeviceState.Offline),
+                    new Receiver("R12", "10.0.0.24", "www.aaa02.es", Common.DeviceState.StandBy),
+                    new Receiver("R13", "172.16.5.7", "www.bbb02.es", Common.DeviceState.Active),
+                    new Receiver("R14", "192.168.0.34", "www.ccc02.es", Common.DeviceState.StandBy),
+                    new Receiver("R15", "10.10.10.13", "www.ddd02.es", Common.DeviceState.Offline),
+                };
+
+                await AddRangeAsync(receivers);
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
         }
 
         public Receiver? GetById(int id)

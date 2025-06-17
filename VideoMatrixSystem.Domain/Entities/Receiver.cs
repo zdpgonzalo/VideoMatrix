@@ -33,10 +33,11 @@ namespace VideoMatrixSystem.Domain.Entities
             Transmitter = null;
         }
 
-        public Receiver(string name, string ip, DeviceState state)
+        public Receiver(string name, string ip, string imageUrl, DeviceState state)
         {
             UpdateName(name);
             UpdateIP(ip);
+            UpdateImage(imageUrl);
             UpdateState(state);
         }
 

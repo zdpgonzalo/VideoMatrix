@@ -1,8 +1,6 @@
 ﻿using VideoMatrixSystem.Domain.Common;
-using VideoMatrixSystem.Domain.General;
 using VideoMatrixSystem.Domain.Context;
 using VideoMatrixSystem.Infraestructure.Repository;
-using VideoMatrixSystem.Domain.Repository;
 
 namespace VideoMatrixSystem.Infraestructure.UseCases
 {
@@ -29,7 +27,8 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
         public enum Names
         {
             None,
-            GetTransmitters
+            GetTransmitters,
+            GetReceivers,
         }
 
 
@@ -144,6 +143,17 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
                     {
                         case Names.GetTransmitters:
                             return repositoryManager.TransmittersRepository.GetAll();
+
+                        default:
+                            break;
+                    }
+                    break;
+
+                case Tables.Receiver:
+                    switch (name)
+                    {
+                        case Names.GetReceivers:
+                            return repositoryManager.ReceiverRepository.GetAll();
 
                         default:
                             break;

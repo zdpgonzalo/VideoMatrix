@@ -18,6 +18,20 @@ namespace VideoMatrixSystem.Domain.Context
         /// </summary>
         public DbSet<Receiver> Receivers { get; set; }
 
+        public void ResetDatabase()
+        {
+            try
+            {
+                Database.EnsureDeleted();
+                Database.EnsureCreated();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             lock (ContextLock)

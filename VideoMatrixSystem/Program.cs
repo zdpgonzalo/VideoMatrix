@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.Blazor;
 using VideoMatrixSystem.Components;
 using VideoMatrixSystem.Domain.Context;
 using VideoMatrixSystem.Infraestructure.Repository;
@@ -19,6 +20,13 @@ builder.Services.AddScoped<GesVideoMatrix>();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddSyncfusionBlazor();
+
+using (var db = new AppDbContext())
+{
+    db.ResetDatabase();
+}
+
 
 var app = builder.Build();
 

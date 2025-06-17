@@ -107,13 +107,23 @@ namespace VideoMatrixSystem.Domain.Repository
                 }
 
                 List<Transmitter> transmitters = new List<Transmitter>()
-            {
-                new Transmitter("T01", "1.2.3.4", "www.image.es", Common.DeviceState.Offline),
-                new Transmitter("T02", "432.23.2", "www.aaa.es", Common.DeviceState.StandBy),
-                new Transmitter("T03", "123.54.6", "www.bbb.es", Common.DeviceState.Active),
-                new Transmitter("T04", "532.63.3", "www.ccc.es", Common.DeviceState.StandBy),
-                new Transmitter("T05", "16.53.12", "www.ddd.es", Common.DeviceState.Offline),
-            };
+                {
+                    new Transmitter("T01", "1.2.3.4", "www.image.es", Common.DeviceState.Offline),
+                    new Transmitter("T02", "432.23.2", "www.aaa.es", Common.DeviceState.StandBy),
+                    new Transmitter("T03", "123.54.6", "www.bbb.es", Common.DeviceState.Active),
+                    new Transmitter("T04", "532.63.3", "www.ccc.es", Common.DeviceState.StandBy),
+                    new Transmitter("T05", "16.53.12", "www.ddd.es", Common.DeviceState.Offline),
+                    new Transmitter("T06", "192.168.1.10", "www.image01.es", Common.DeviceState.Offline),
+                    new Transmitter("T07", "10.0.0.23", "www.aaa01.es", Common.DeviceState.StandBy),
+                    new Transmitter("T08", "172.16.5.6", "www.bbb01.es", Common.DeviceState.Active),
+                    new Transmitter("T09", "192.168.0.33", "www.ccc01.es", Common.DeviceState.StandBy),
+                    new Transmitter("T10", "10.10.10.12", "www.ddd01.es", Common.DeviceState.Offline),
+                    new Transmitter("T11", "192.168.1.11", "www.image02.es", Common.DeviceState.Offline),
+                    new Transmitter("T12", "10.0.0.24", "www.aaa02.es", Common.DeviceState.StandBy),
+                    new Transmitter("T13", "172.16.5.7", "www.bbb02.es", Common.DeviceState.Active),
+                    new Transmitter("T14", "192.168.0.34", "www.ccc02.es", Common.DeviceState.StandBy),
+                    new Transmitter("T15", "10.10.10.13", "www.ddd02.es", Common.DeviceState.Offline),
+                };
 
                 await AddRangeAsync(transmitters);
 
