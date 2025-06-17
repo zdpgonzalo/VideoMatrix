@@ -112,7 +112,14 @@ namespace VideoMatrixSystem.Domain.Entities
         /// <returns>True</returns>
         public bool UpdateTransmitter(Transmitter? transmitter)
         {
+            if(Transmitter != null)
+            {
+                Transmitter.RemoveReceiver(this);
+            }
+
             Transmitter = transmitter;
+            Transmitter?.AddReceiver(this);
+
             SetChanges(OpResul.Page);
             return true;
         }

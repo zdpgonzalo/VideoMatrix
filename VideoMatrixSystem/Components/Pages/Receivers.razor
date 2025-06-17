@@ -1,0 +1,109 @@
+﻿@page "/receivers"
+@using VideoMatrixSystem.Common
+@using VideoMatrixSystem.Domain.Common
+@using VideoMatrixSystem.Domain.Entities
+@using VideoMatrixSystem.Infraestructure.UseCases
+@inject GesVideoMatrix _gesVideoMatrix
+
+<PageTitle>Receptores</PageTitle>
+
+<div class="page-container">
+
+	<div class="receiver-grid">
+		@foreach (var receiver in ViewModel.Receivers)
+		{
+			<div class="receiver-card">
+				@if(receiver.Transmitter != null)
+				{
+					<img src="@receiver.Transmitter.ImageUrl" class="receiver-image"/>
+				}
+				else
+				{
+					<img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" class="receiver-image" />
+				}
+
+				<div class="receiver-info">
+					<span class="receiver-status @GetStatusClass(receiver.State)">
+						@receiver.State
+					</span>
+
+					<h3 class="receiver-name">@receiver.Name</h3>
+					<p class="receiver-code">@receiver.IP</p>
+				</div>
+			</div>
+		}
+	</div>
+
+</div>
+
+@code {
+	public ReceiverPresentationVM ViewModel;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		ViewModel = new(_gesVideoMatrix);
+	}
+
+	public class ReceiverPresentationVM : ViewModelBase
+	{
+		public ReceiverPresentationVM(IAction GesVideoMatrix) : base(GesVideoMatrix)
+		{
+			UpdateModel(OpResul.Range);
+		}
+
+		public List<ReceiverVM> Receivers = new();
+
+		public class ReceiverVM
+		{
+			public int Id { get; set; }
+			public string Name { get; set; } = null!;
+			public string IP { get; set; } = null!;
+			public string ImageUrl { get; set; } = null!;
+			public DeviceState State { get; set; }
+			public Transmitter? Transmitter { get; set; } = null!;
+
+			public static explicit operator ReceiverVM(Receiver receiver)
+			{
+				return new ReceiverVM()
+				{
+					Id			= receiver.Id,
+					Name		= receiver.Name,
+					IP			= receiver.IP,
+					ImageUrl	= receiver.ImageUrl,
+					State		= receiver.State,
+					Transmitter = receiver.Transmitter
+				};
+			}
+
+			public override string ToString()
+			{
+				return $"ID: {Id}, Name: {Name}";
+			}
+		}
+
+		public override void UpdateModel(OpResul dataResul)
+		{
+			var receiverList = (List<Receiver>)GetData("Receiver_GetReceivers");
+
+			Receivers = receiverList.Select(r => (ReceiverVM)r).ToList();
+		}
+	}
+
+	
+	/// <summary>
+	/// Returns the CSS class for the state of a device
+	/// </summary>
+	/// <param name="status">State of the device</param>
+	/// <returns>A string containing the appropiate CSS class for the item</returns>
+	private string GetStatusClass(DeviceState status)
+	{
+		if (status == DeviceState.None)
+		{
+			return nameof(DeviceState.Offline).ToLower();
+		}
+
+		return status.ToString().ToLower();
+	}
+}

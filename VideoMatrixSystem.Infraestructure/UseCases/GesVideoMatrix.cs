@@ -1,5 +1,6 @@
 ﻿using VideoMatrixSystem.Domain.Common;
 using VideoMatrixSystem.Domain.Context;
+using VideoMatrixSystem.Domain.Entities;
 using VideoMatrixSystem.Infraestructure.Repository;
 
 namespace VideoMatrixSystem.Infraestructure.UseCases
@@ -10,6 +11,12 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
         private RepositoryManager repositoryManager;
         private readonly AppDbContext context;
         private OpResul dataResul;
+
+        private int SelectedTransmitterId { get; set; }
+        public Transmitter? SelectedTransmitter
+        {
+            get => repositoryManager.TransmittersRepository.GetById(SelectedTransmitterId);
+        }
 
         public GesVideoMatrix(RepositoryManager repositoryManager, AppDbContext context) : base()
         {
@@ -29,12 +36,15 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
             None,
             GetTransmitters,
             GetReceivers,
+            GetSelectedTransmitter
         }
 
 
         public enum Actions
         {
             None,
+            SelectTransmitter,
+            ChangeReceiverTransmitter
         }
 
         public enum Events
@@ -66,13 +76,28 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
                     case Tables.Transmitter:
                         switch (oper)
                         {
+                            case Actions.SelectTransmitter:
+                                SelectedTransmitterId = Convert.ToInt32(info[0]);
+                                return true;
+
                             default:
                                 return -1;
                         }
 
                     case Tables.Receiver:
+
+                        Receiver? receiver = GetReceiver(Convert.ToInt32(info[0]));
+                        if(receiver == null)
+                        {
+                            return false;
+                        }
+
                         switch (oper)
                         {
+                            case Actions.ChangeReceiverTransmitter:
+                                Transmitter? transmitter = GetTransmitter(Convert.ToInt32(info[1]));
+                                return receiver.UpdateTransmitter(transmitter);
+
                             default:
                                 return -1;
                         }
@@ -85,7 +110,10 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
             {
                 return false;
             }
-
+            finally
+            {
+                context.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -144,6 +172,9 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
                         case Names.GetTransmitters:
                             return repositoryManager.TransmittersRepository.GetAll();
 
+                        case Names.GetSelectedTransmitter:
+                            return SelectedTransmitter;
+
                         default:
                             break;
                     }
@@ -166,6 +197,30 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
 
             return null;
         }
+
+        #region GETTERS
+
+        /// <summary>
+        /// Retrieves a receiver by its unique identifier.
+        /// </summary>
+        /// <param name="Id">The ID of the receiver to retrieve.</param>
+        /// <returns>The matching <see cref="Receiver"/> instance if found; otherwise, <c>null</c>.</returns>
+        private Receiver? GetReceiver(int Id)
+        {
+            return repositoryManager.ReceiverRepository.GetById(Id);
+        }
+
+        /// <summary>
+        /// Retrieves a transmitter by its unique identifier.
+        /// </summary>
+        /// <param name="Id">The ID of the transmitter to retrieve.</param>
+        /// <returns>The matching <see cref="Transmitter"/> instance if found; otherwise, <c>null</c>.</returns>
+        private Transmitter? GetTransmitter(int Id)
+        {
+            return repositoryManager.TransmittersRepository.GetById(Id);
+        }
+
+        #endregion
 
     }
 }

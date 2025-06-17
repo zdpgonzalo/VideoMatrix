@@ -15,17 +15,16 @@
     <div class="table-container">
         <h3 class="section-title section-title-blue">Transmisores</h3>
 
-        <div class="status-legend">
-            <div><span class="status-circle active"></span> Activo</div>
-            <div><span class="status-circle standby"></span> Espera</div>
-            <div><span class="status-circle offline"></span> Desactivado</div>
-        </div>
+        <StatusLegend/>
 
         <div class="grid-container">
             @foreach (var item in ViewModel.Transmitters)
             {
-                <SfButton CssClass="@GetButtonClass(item)" @onclick="() => SelectTransmitter(item)">
-                    <strong>@item.Name</strong>
+                <SfButton CssClass="@GetTransmitterClass(item)" @onclick="() => SelectTransmitter(item)">
+                    <div class="device-button-content">
+                        <span class="status-circle status-indicator @GetStatusClass(item.State)"></span>
+                        <strong>@item.Name</strong>
+                    </div>
                 </SfButton>
             }
         </div>
@@ -38,17 +37,16 @@
     <div class="table-container">
         <h3 class="section-title section-title-orange">Receptores</h3>
 
-        <div class="status-legend">
-            <div><span class="status-circle active"></span> Activo</div>
-            <div><span class="status-circle standby"></span> Espera</div>
-            <div><span class="status-circle offline"></span> Desactivado</div>
-        </div>
+        <StatusLegend/>
 
         <div class="grid-container">
             @foreach (var item in ViewModel.Receivers)
             {
-                <SfButton CssClass="e-primary device-item receiver">
-                    <strong>@item.Name</strong>
+                <SfButton CssClass="@GetReceiverClass(item)" @onclick="() => SelectReceiver(item)">
+                    <div class="device-button-content">
+                        <span class="status-circle status-indicator @GetStatusClass(item.State)"></span>
+                        <strong>@item.Name</strong>
+                    </div>
                 </SfButton>
             }
         </div>
@@ -73,30 +71,30 @@
         }
 
         public TransmitterVM SelectedTransmitter;
-        public ReceiverVM SelectedReceiver;
         public List<TransmitterVM> Transmitters = new();
         public List<ReceiverVM> Receivers = new();
 
         public class TransmitterVM()
         {
-            private int Id { get; set; }
+            public int Id { get; set; }
             public string Name { get; set; } = null!;
-            public string IP { get; set; } = null!;
-            public string ImageURL { get; set; } = null!;
             public DeviceState State{ get; set; }
-            public List<ReceiverVM> Receivers { get; set; } = new();
+            public List<int> Receivers { get; set; } = new();
 
             public static explicit operator TransmitterVM(Transmitter transmitter)
             {
+                if(transmitter == null)
+                {
+                    return null;
+                }
+
                 return new TransmitterVM()
                 {
                     Id          = transmitter.Id,
                     Name        = transmitter.Name,
-                    IP          = transmitter.IP,
-                    ImageURL    = transmitter.ImageUrl,
                     State       = transmitter.State,
                     Receivers   = transmitter.Receivers
-                                    .Select(r => (ReceiverVM)r)
+                                    .Select(r => r.Id)
                                     .ToList()
                 };
             }
@@ -109,21 +107,24 @@
 
         public class ReceiverVM()
         {
-            private int Id { get; set; }
+            public int Id { get; set; }
+            public int? TransmitterId { get; set; }
             public string Name { get; set; } = null!;
-            public string IP { get; set; } = null!;
-            public string ImageURL { get; set; } = null!;
             public DeviceState State{ get; set; }
 
             public static explicit operator ReceiverVM(Receiver receiver)
             {
+                if(receiver == null)
+                {
+                    return null;
+                }
+
                 return new ReceiverVM()
                 {
-                    Id          = receiver.Id,
-                    Name        = receiver.Name,
-                    IP          = receiver.IP,
-                    ImageURL    = receiver.ImageUrl,
-                    State       = receiver.State
+                    Id              = receiver.Id,
+                    TransmitterId   = receiver.TransmitterId,
+                    Name            = receiver.Name,
+                    State           = receiver.State
                 };
             }
 
@@ -140,22 +141,90 @@
 
             Transmitters = transmitterList.Select(t => (TransmitterVM)t).ToList();
             Receivers = receiverList.Select(r => (ReceiverVM)r).ToList();
+
+            SelectedTransmitter = (TransmitterVM)((Transmitter)GetData("Transmitter_GetSelectedTransmitter"));
         }
     }
 
     #region Actions
 
+    /// <summary>
+    /// Sets the selected transmitter in the ViewModel when a transmitter is clicked.
+    /// </summary>
+    /// <param name="transmitter">The transmitter to be selected.</param>
     public void SelectTransmitter(TransmitterReceiverPairVM.TransmitterVM transmitter)
     {
-        ViewModel.SelectedTransmitter = transmitter;
+        int selectedId = ViewModel.SelectedTransmitter?.Id == transmitter.Id ? -1 : transmitter.Id;
+        ViewModel.Action("Transmitter_SelectTransmitter", selectedId);
     }
 
-    private string GetButtonClass(TransmitterReceiverPairVM.TransmitterVM item)
+    /// <summary>
+    /// Sets the selected transmitter in the ViewModel when a transmitter is clicked.
+    /// </summary>
+    /// <param name="receiver">The receiver to be selected.</param>
+    public void SelectReceiver(TransmitterReceiverPairVM.ReceiverVM receiver)
+    {
+        if (ViewModel.SelectedTransmitter == null)
+        {
+            return;
+        }
+
+        if (ViewModel.SelectedTransmitter.Id == receiver.TransmitterId)
+        {
+            ViewModel.Action("Receiver_ChangeReceiverTransmitter", receiver.Id, -1);
+        }
+        else
+        {
+            ViewModel.Action("Receiver_ChangeReceiverTransmitter", receiver.Id, ViewModel.SelectedTransmitter.Id);
+        }
+    }
+
+    /// <summary>
+    /// Returns the CSS class for a transmitter button, adding a "selected" class if it is 
+    /// the currently selected transmitter.
+    /// </summary>
+    /// <param name="item">The transmitter item to evaluate.</param>
+    /// <returns>A string containing the appropriate CSS class for the button.</returns>
+    private string GetTransmitterClass(TransmitterReceiverPairVM.TransmitterVM item)
     {
         var baseClass = "e-primary device-item";
-        if (ViewModel.SelectedTransmitter != null && ViewModel.SelectedTransmitter == item)
-            return baseClass + " selected";
+
+        if (ViewModel.SelectedTransmitter != null && ViewModel.SelectedTransmitter?.Id == item.Id)
+            return baseClass + " selected-transmitter";
+
         return baseClass;
+    }
+
+    /// <summary>
+    /// Returns the CSS class for a receiver button, adding a "selected" class 
+    /// if it is the currently selected.
+    /// </summary>
+    /// <param name="item">The receiver item to evaluate.</param>
+    /// <returns>A string containing the appropriate CSS class for the button.</returns>
+    private string GetReceiverClass(TransmitterReceiverPairVM.ReceiverVM item)
+    {
+        var baseClass = "e-primary device-item";
+
+        if (ViewModel.SelectedTransmitter != null && 
+            ViewModel.SelectedTransmitter?.Receivers.Contains(item.Id) == true)
+            return baseClass + " selected-receiver";
+
+        return baseClass;
+    }
+
+    /// <summary>
+    /// Returns the CSS class for the state of a device
+    /// </summary>
+    /// <param name="status">State of the device</param>
+    /// <returns>A string containing the appropiate CSS class for the item</returns>
+    private string GetStatusClass(DeviceState status)
+    {
+        if(status == DeviceState.None)
+        {
+            return nameof(DeviceState.Offline).ToLower();
+        }
+
+        return status.ToString().ToLower();
     }
 
     #endregion

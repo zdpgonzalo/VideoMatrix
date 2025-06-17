@@ -135,6 +135,40 @@ namespace VideoMatrixSystem.Domain.Entities
 
         }
 
+        /// <summary>
+        /// Adds the receiver list of the transmitter
+        /// </summary>
+        /// <returns>True if adds the receiver successfully, otherwise false</returns>
+        public bool AddReceiver(Receiver receiver)
+        {
+            if (Receivers.Contains(receiver))
+            {
+                return false;
+            }
+
+            Receivers.Add(receiver);
+            SetChanges(OpResul.Page);
+            return true;
+
+        }
+
+        /// <summary>
+        /// Removes the receiver from the list of the transmitter
+        /// </summary>
+        /// <returns>True if removes the receiver successfully, otherwise false</returns>
+        public bool RemoveReceiver(Receiver receiver)
+        {
+            if (Receivers.Contains(receiver))
+            {
+                return false;
+            }
+
+            Receivers.Remove(receiver);
+            SetChanges(OpResul.Page);
+            return true;
+
+        }
+
         public override string ToString()
         {
             return $"ID: {Id}, Name: {Name}";

@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoMatrixSystem", "VideoMatrixSystem\VideoMatrixSystem.csproj", "{64E71C83-FE39-4D5C-B0DA-06A28ED3FBA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoMatrixSystem", "VideoMatrixSystem\VideoMatrixSystem.csproj", "{64E71C83-FE39-4D5C-B0DA-06A28ED3FBA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoMatrixSystem.Domain", "VideoMatrixSystem.Domain\VideoMatrixSystem.Domain.csproj", "{A1518DEE-2FA1-4378-9E58-99F0BFFD0551}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoMatrixSystem.Domain", "VideoMatrixSystem.Domain\VideoMatrixSystem.Domain.csproj", "{A1518DEE-2FA1-4378-9E58-99F0BFFD0551}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoMatrixSystem.Infraestructure", "VideoMatrixSystem.Infraestructure\VideoMatrixSystem.Infraestructure.csproj", "{29BBEFEE-C386-40BA-95CC-CD6590EA3C16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoMatrixSystem.Infraestructure", "VideoMatrixSystem.Infraestructure\VideoMatrixSystem.Infraestructure.csproj", "{29BBEFEE-C386-40BA-95CC-CD6590EA3C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

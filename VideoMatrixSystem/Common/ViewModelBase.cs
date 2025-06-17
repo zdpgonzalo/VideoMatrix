@@ -5,9 +5,9 @@ namespace VideoMatrixSystem.Common
 {
     public partial class ViewModelBase
     {
-        public ViewModelBase(IAction gesCorreos)
+        public ViewModelBase(IAction gesVideoMatrix)
         {
-            DataRefer = gesCorreos;
+            DataRefer = gesVideoMatrix;
         }
 
         internal IAction DataRefer { get; set; }
