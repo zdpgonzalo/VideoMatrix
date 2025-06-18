@@ -50,26 +50,28 @@ h1:focus {
     border-color: #929292;
 }
 
-/* Contenedor principal que divide la pantalla en 2 columnas */
+/* CONEXION PAGE */
 .page-container {
+    height:100%;
+    overflow-y: auto;
     display: flex;
     flex-direction: row;
     gap: 2rem;
     padding: 2rem;
     height: 100vh;
     box-sizing: border-box;
-    
 }
 
 .table-container {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .page-container {
-        flex-direction: column; /* <- Aquí cambias a diseño vertical */
+        flex-direction: column;
     }
 
     .table-container {
@@ -81,7 +83,7 @@ h1:focus {
     }
 }
 
-/* Título centrado, azul y grande */
+/* Table title */
 .section-title {
     text-align: center;
     font-size: 1.8rem;
@@ -89,24 +91,22 @@ h1:focus {
     margin-bottom: 1rem;
 }
 
-/* Color azul para transmisores */
-.section-title-blue {
-    color: #007bff;
-}
+    /* Blue style for transmitters */
+    .section-title-blue {
+        color: #007bff;
+    }
 
-/* Color naranja para receptores */
-.section-title-orange {
-    color: #d35400;
-}
+    /* Orange style for receivers */
+    .section-title-orange {
+        color: #d35400;
+    }
 
-/* Grid de 3 columnas por fila */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 }
 
-/* Estilo visual para los botones cuadrados */
 .device-item {
     width: 100%;
     height: 100px;
@@ -133,14 +133,13 @@ h1:focus {
         color: white;
     }
 
-/* Separador vertical entre las tablas */
 .separator {
     width: 2px;
     background-color: #ccc;
     margin: 0 1rem;
 }
 
-/* Estados dispositivos */
+/* Device state styles */
 .status-legend {
     display: flex;
     gap: 1.5rem;
@@ -156,6 +155,7 @@ h1:focus {
         gap: 0.5rem;
     }
 
+
 .status-circle {
     width: 12px;
     height: 12px;
@@ -163,7 +163,6 @@ h1:focus {
     display: inline-block;
 }
 
-    /* Colores según estado */
     .status-circle.active {
         background-color: #28a745; /* Green */
     }
@@ -176,7 +175,6 @@ h1:focus {
         background-color: #6c757d; /* Gray */
     }
 
-/*Indicador estado items*/
 .device-button-content {
     position: relative;
     display: flex;
@@ -192,20 +190,37 @@ h1:focus {
 }
 
 /* RECEIVER WINDOW */
+.receiver-page {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+    height: 100%;
+    box-sizing: border-box;
+}
+
 .receiver-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 }
 
+@media (max-width: 758px) {
+    .receiver-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 .receiver-card {
-    height:max-content;
+    height: max-content;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     background-color: #fff;
     text-align: center;
     padding: 1rem;
+    cursor: pointer;
     transition: transform 0.2s ease;
 }
 
@@ -215,7 +230,7 @@ h1:focus {
 
 .receiver-image {
     width: 100%;
-    height: auto;
+    aspect-ratio: 16 / 9;
     margin: 0 auto 0.5rem auto;
     display: block;
     object-fit: cover;
@@ -231,37 +246,94 @@ h1:focus {
 
 .receiver-status {
     font-weight: bold;
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
     font-size: 0.85rem;
-    margin-bottom: 0.5rem;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
-
-    /* Colores de estado */
-    .receiver-status.active {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .receiver-status.standby {
-        background-color: #ffc107;
-        color: white;
-    }
-
-    .receiver-status.offline {
-        background-color: #6c757d;
-        color: white;
-    }
 
 .receiver-name {
     font-size: 1rem;
     font-weight: 600;
-    color:black;
+    color: black;
 }
 
-.receiver-code {
-    font-size: 0.85rem;
-    color:black;
-    ;
+.receiver-ip {
+    font-size: 1rem;
+    color: black;
+    display: inline-flex;
 }
+
+/*Filter dropdown style*/
+.filter-dropdown {
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.filter-options {
+    background: white;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: absolute;
+    z-index: 100;
+}
+
+    .filter-options label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-right:1rem;
+    }
+
+/*Modal*/
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+    .modal-content button {
+        margin-top: 1rem;
+        margin-right: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+        .modal-content button:first-of-type {
+            background-color: #007bff;
+            color: white;
+        }
+
+.transmitter-selector {
+    margin-top: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .transmitter-selector select {
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+    }

@@ -38,7 +38,7 @@ namespace VideoMatrixSystem.Domain.Context
             {
                 if (!optionsBuilder.IsConfigured)
                 {
-                    //var connectionString = "server=localhost;port=3306;database=videomatrixdb;user=root;password=videomatrixpass;";
+                    //var connectionString = "server=sql7.freesqldatabase.com;port=3306;database=sql7785603;user=sql7785603;password=A49JlLlHDt;";
 
                     //var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
 

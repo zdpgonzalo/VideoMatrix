@@ -90,7 +90,7 @@ namespace VideoMatrixSystem.Common
             }
             catch (Exception exc)
             {
-                return false;
+                return null;
             }
             finally
             {

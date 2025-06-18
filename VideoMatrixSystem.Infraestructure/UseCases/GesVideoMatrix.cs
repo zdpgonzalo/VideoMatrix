@@ -18,6 +18,12 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
             get => repositoryManager.TransmittersRepository.GetById(SelectedTransmitterId);
         }
 
+        private int SelectedReceiverId { get; set; }
+        public Receiver? SelectedReceiver
+        {
+            get => repositoryManager.ReceiverRepository.GetById(SelectedReceiverId);
+        }
+
         public GesVideoMatrix(RepositoryManager repositoryManager, AppDbContext context) : base()
         {
             this.context = context;
@@ -34,16 +40,20 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
         public enum Names
         {
             None,
+
             GetTransmitters,
             GetReceivers,
-            GetSelectedTransmitter
+            GetSelectedTransmitter,
+            GetSelectedReceiver,
         }
 
 
         public enum Actions
         {
             None,
+            SwitchState,
             SelectTransmitter,
+            SelectReceiver,
             ChangeReceiverTransmitter
         }
 
@@ -80,25 +90,48 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
                                 SelectedTransmitterId = Convert.ToInt32(info[0]);
                                 return true;
 
+                            case Actions.SwitchState:
+                                if (SelectedTransmitter == null)
+                                    return false;
+                                return SelectedTransmitter.SwitchState();
+
                             default:
                                 return -1;
                         }
 
                     case Tables.Receiver:
+                        SelectedReceiverId = Convert.ToInt32(info[0]);
+                        Receiver? receiver = GetReceiver(SelectedReceiverId);
+						try
+						{
+							var usuarios = context.Transmitters.ToList();
 
-                        Receiver? receiver = GetReceiver(Convert.ToInt32(info[0]));
-                        if(receiver == null)
+						}
+						catch (Exception ex)
+						{
+							Console.WriteLine("❌ Error de conexión: " + ex.Message);
+						}
+						if (receiver == null)
                         {
                             return false;
                         }
 
                         switch (oper)
                         {
-                            case Actions.ChangeReceiverTransmitter:
+							case Actions.SelectReceiver:
+								SelectedReceiverId = Convert.ToInt32(info[0]);
+								return true;
+
+							case Actions.ChangeReceiverTransmitter:
                                 Transmitter? transmitter = GetTransmitter(Convert.ToInt32(info[1]));
                                 return receiver.UpdateTransmitter(transmitter);
 
-                            default:
+							case Actions.SwitchState:
+								if (receiver == null)
+									return false;
+								return receiver.SwitchState();
+
+							default:
                                 return -1;
                         }
 
@@ -186,7 +219,10 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
                         case Names.GetReceivers:
                             return repositoryManager.ReceiverRepository.GetAll();
 
-                        default:
+						case Names.GetSelectedReceiver:
+							return SelectedReceiver;
+
+						default:
                             break;
                     }
                     break;

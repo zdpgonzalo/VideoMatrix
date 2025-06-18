@@ -17,4 +17,10 @@
     <ProjectReference Include="..\VideoMatrixSystem.Infraestructure\VideoMatrixSystem.Infraestructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\Pages\Transmitters.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

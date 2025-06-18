@@ -20,6 +20,10 @@
     background-color: rgba(0,0,0,0.4);
 }
 
+    .top-row.navbar {
+        background-color: #08143c;
+    }
+
 .navbar-brand {
     font-size: 1.1rem;
 }
@@ -32,6 +36,11 @@
     margin-right: 0.75rem;
     top: -1px;
     background-size: cover;
+}
+
+.nav-link .bi {
+    font-size: 1.5rem;
+    line-height: 1;
 }
 
 .bi-house-door-fill-nav-menu {
@@ -82,6 +91,7 @@
 }
 
 .nav-scrollable {
+    background-color: #2b3f85;
     display: none;
 }
 

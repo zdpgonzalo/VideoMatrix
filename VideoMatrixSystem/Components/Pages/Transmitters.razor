@@ -1,11 +1,11 @@
-﻿@page "/"
+﻿@page "/transmitters"
 @using VideoMatrixSystem.Common
 @using VideoMatrixSystem.Domain.Common
 @using VideoMatrixSystem.Domain.Entities
 @using VideoMatrixSystem.Infraestructure.UseCases
 @inject GesVideoMatrix _gesVideoMatrix
 
-<PageTitle>Receptores</PageTitle>
+<PageTitle>Transmisores</PageTitle>
 
 <div class="receiver-page">
 
@@ -31,54 +31,41 @@
 		}
 	</div>
 
-	<!--Receiver grid-->
+	<!--Transmitter grid-->
 	<div class="receiver-grid">
-		@foreach (var receiver in ViewModel.Receivers.Where(r => StateFilters[r.State]))
+		@foreach (var transmitter in ViewModel.Transmitters.Where(r => StateFilters[r.State]))
 		{
-			<div class="receiver-card" @onclick="() => OpenModal(receiver)">
-				<h3 class="receiver-name">@receiver.Name</h3>
+			<div class="receiver-card" @onclick="() => OpenModal(transmitter)">
+				<h3 class="receiver-name">@transmitter.Name</h3>
 
-				<img src="@GetReceiverImage(receiver)" class="receiver-image" />
+				<img src="@GetTransmitterImage(transmitter)" class="receiver-image" />
 
 				<div class="receiver-info">
 
 					<span class="receiver-status">
-						<span class="status-circle @GetStatusClass(receiver.State)"/>
-						@GetStatusName(receiver.State)
+						<span class="status-circle @GetStatusClass(transmitter.State)" />
+						@GetStatusName(transmitter.State)
 					</span>
 
-					<p class="receiver-ip">IP: @receiver.IP</p>
+					<p class="receiver-ip">IP: @transmitter.IP</p>
 				</div>
 			</div>
 		}
 	</div>
 
-	<!--Receiver modal-->
-	@if (IsModalOpen && ViewModel.SelectedReceiver != null)
+	<!--Transmitter modal-->
+	@if (IsModalOpen && ViewModel.SelectedTransmitter != null)
 	{
 		<div class="modal-backdrop" @onclick="CloseModal">
 			<div class="modal-content" @onclick:stopPropagation="true">
-				<h2>@ViewModel.SelectedReceiver.Name</h2>
-				<p><strong>Estado:</strong> @GetStatusName(ViewModel.SelectedReceiver.State)</p>
-				<p><strong>IP:</strong> @ViewModel.SelectedReceiver.IP</p>
-				<img src="@GetReceiverImage(ViewModel.SelectedReceiver)" class="receiver-image" />
+				<h2>@ViewModel.SelectedTransmitter.Name</h2>
+				<p><strong>Estado:</strong> @GetStatusName(ViewModel.SelectedTransmitter.State)</p>
+				<p><strong>IP:</strong> @ViewModel.SelectedTransmitter.IP</p>
+				<img src="@GetTransmitterImage(ViewModel.SelectedTransmitter)" class="receiver-image" />
 
-				<!--Switch state button-->
-				<button @onclick="ToggleReceiverState">
-					@(ViewModel.SelectedReceiver.State == DeviceState.Offline ? "Encender" : "Apagar")
+				<button @onclick="ToggleTransmitterState">
+					@(ViewModel.SelectedTransmitter.State == DeviceState.Offline ? "Encender" : "Apagar")
 				</button>
-
-				<!-- Botón + selector transmisor -->
-				<div class="transmitter-selector">
-					<label for="transmitterSelect"><strong>Transmisor: </strong></label>
-					<select id="transmitterSelect" @bind="SelectedTransmitterId">
-						<option disabled selected value="">Selecciona un transmisor</option>
-						@foreach (var transmitter in ViewModel.Transmitters)
-						{
-							<option value="@transmitter.Id">@transmitter.Name</option>
-						}
-					</select>
-				</div>
 
 				<button @onclick="CloseModal">Cerrar</button>
 			</div>
@@ -88,7 +75,7 @@
 </div>
 
 @code {
-	private ReceiverPresentationVM ViewModel;
+	private TransmitterPresentationVM ViewModel;
 
 	private string defaultImageUrl = "https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg";
 	private string offlineImageUrl = "https://media.licdn.com/dms/image/v2/C4E12AQEHncNrCIkqNA/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1520095517517?e=2147483647&v=beta&t=uV_huUri0E0Yib_a6NBG_-j4koK7Q2x9uJmB5gseakc";
@@ -103,24 +90,6 @@
 		{ DeviceState.Offline, true }
 	};	
 
-	private string? selectedTransmitterId;
-	private string? SelectedTransmitterId
-	{
-		get => ViewModel.SelectedReceiver.Transmitter?.Id.ToString();
-		set
-		{
-			selectedTransmitterId = value;
-			if (int.TryParse(value, out var id))
-			{
-				var transmitter = ViewModel.Transmitters.FirstOrDefault(t => t.Id == id);
-				if (transmitter != null)
-				{
-					ViewModel.Action("Receiver_ChangeReceiverTransmitter", ViewModel.SelectedReceiver?.Id, transmitter?.Id);
-				}
-			}
-		}
-	}
-
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
@@ -128,57 +97,28 @@
 		ViewModel = new(_gesVideoMatrix);
 	}
 
-	public class ReceiverPresentationVM : ViewModelBase
+	public class TransmitterPresentationVM : ViewModelBase
 	{
-		public ReceiverPresentationVM(IAction GesVideoMatrix) : base(GesVideoMatrix)
+		public TransmitterPresentationVM(IAction GesVideoMatrix) : base(GesVideoMatrix)
 		{
-			Action("Receiver_SelectReceiver", -1);
+			Action("Transmitter_SelectTransmitter", -1);
 			UpdateModel(OpResul.Range);
 		}
 
-		public List<ReceiverVM> Receivers = new();
 		public List<TransmitterVM> Transmitters = new();
-		public ReceiverVM? SelectedReceiver;
-
-		public class ReceiverVM
-		{
-			public int Id { get; set; }
-			public string Name { get; set; } = null!;
-			public string IP { get; set; } = null!;
-			public DeviceState State { get; set; }
-			public Transmitter? Transmitter { get; set; } = null!;
-
-			public static explicit operator ReceiverVM(Receiver receiver)
-			{
-				if(receiver == null)
-				{
-					return null;
-				}
-
-				return new ReceiverVM()
-				{
-					Id			= receiver.Id,
-					Name		= receiver.Name,
-					IP			= receiver.IP,
-					State		= receiver.State,
-					Transmitter = receiver.Transmitter
-				};
-			}
-
-			public override string ToString()
-			{
-				return $"ID: {Id}, Name: {Name}";
-			}
-		}
+		public TransmitterVM? SelectedTransmitter;
 
 		public class TransmitterVM
 		{
 			public int Id { get; set; }
 			public string Name { get; set; } = null!;
+			public string IP { get; set; } = null!;
+			public string ImageUrl { get; set; } = null!;
+			public DeviceState State { get; set; }
 
 			public static explicit operator TransmitterVM(Transmitter transmitter)
 			{
-				if(transmitter == null)
+				if (transmitter == null)
 				{
 					return null;
 				}
@@ -187,6 +127,9 @@
 				{
 					Id			= transmitter.Id,
 					Name		= transmitter.Name,
+					IP			= transmitter.IP,
+					ImageUrl	= transmitter.ImageUrl,
+					State		= transmitter.State,
 				};
 			}
 
@@ -198,13 +141,11 @@
 
 		public override void UpdateModel(OpResul dataResul)
 		{
-			var receiverList = (List<Receiver>)GetData("Receiver_GetReceivers");
 			var transmitterList = (List<Transmitter>)GetData("Transmitter_GetTransmitters");
-			var selectedReceiver = (Receiver)GetData("Receiver_GetSelectedReceiver");
+			var selectedTransmitter = (Transmitter)GetData("Transmitter_GetSelectedTransmitter");
 
-			Receivers = receiverList.Select(r => (ReceiverVM)r).ToList();
-			Transmitters = transmitterList.Select(t => (TransmitterVM)t).ToList();
-			SelectedReceiver = (ReceiverVM)selectedReceiver;
+			Transmitters = transmitterList.Select(r => (TransmitterVM)r).ToList();
+			SelectedTransmitter = (TransmitterVM)selectedTransmitter;
 		}
 	}
 
@@ -243,23 +184,15 @@
 	}
 
 	/// <summary>
-	/// Returns the image URL for the receiver based on its state.
-	/// If the receiver is offline, a predefined offline image is returned.
+	/// Returns the image URL for the transmitter based on its state.
+	/// If the transmitter is offline, a predefined offline image is returned.
 	/// Otherwise, it returns the transmitter image or a default placeholder.
 	/// </summary>
-	/// <param name="receiver">The receiver view model.</param>
+	/// <param name="transmitter">The transmitter view model.</param>
 	/// <returns>The image URL to display.</returns>
-	private string GetReceiverImage(ReceiverPresentationVM.ReceiverVM receiver)
+	private string GetTransmitterImage(TransmitterPresentationVM.TransmitterVM transmitter)
 	{
-		if(receiver.State == DeviceState.Offline)
-			return offlineImageUrl;
-
-		if(receiver.Transmitter?.State == DeviceState.Offline)
-		{
-			return defaultImageUrl;
-		}
-
-		return receiver.Transmitter?.ImageUrl ?? defaultImageUrl;
+		return transmitter?.ImageUrl ?? defaultImageUrl;
 	}
 
 	#endregion
@@ -287,9 +220,9 @@
 	/// Opens a modal displaying the selected receiver's information.
 	/// </summary>
 	/// <param name="receiver">The receiver to display in the modal.</param>
-	private void OpenModal(ReceiverPresentationVM.ReceiverVM receiver)
+	private void OpenModal(TransmitterPresentationVM.TransmitterVM receiver)
 	{
-		ViewModel.Action("Receiver_SelectReceiver", receiver.Id);
+		ViewModel.Action("Transmitter_SelectTransmitter", receiver.Id);
 		IsModalOpen = true;
 	}
 
@@ -299,30 +232,18 @@
 	private void CloseModal()
 	{
 		IsModalOpen = false;
-		ViewModel.Action("Receiver_SelectReceiver", -1);
+		ViewModel.Action("Transmitter_SelectTransmitter", -1);
 	}
 
 	/// <summary>
-	/// Turns the receiver on or off.
+	/// Turns the transmitter on or off.
 	/// </summary>
-	private void ToggleReceiverState()
+	private void ToggleTransmitterState()
 	{
-		if (ViewModel.SelectedReceiver == null)
+		if (ViewModel.SelectedTransmitter == null)
 			return;
 
-		ViewModel.Action("Receiver_SwitchState", ViewModel.SelectedReceiver.Id);
-	}
-
-	private void OnTransmitterChange(ChangeEventArgs e)
-	{
-		if (int.TryParse(e.Value?.ToString(), out int transmitterId))
-		{
-			var selected = ViewModel.Transmitters.FirstOrDefault(t => t.Id == transmitterId);
-			if (selected != null)
-			{
-				ViewModel.Action("Receiver_ChangeReceiverTransmitter", ViewModel.SelectedReceiver?.Id, selected?.Id);
-			}
-		}
+		ViewModel.Action("Transmitter_SwitchState", ViewModel.SelectedTransmitter.Id);
 	}
 	#endregion
 }

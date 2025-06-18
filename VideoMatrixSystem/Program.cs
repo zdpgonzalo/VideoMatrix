@@ -7,12 +7,17 @@ using VideoMatrixSystem.Infraestructure.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseMySql(
+//        builder.Configuration.GetConnectionString("DefaultConnection"),
+//        new MySqlServerVersion(new Version(8, 0, 36)),
+//        opts => opts.EnableRetryOnFailure())
+//    .LogTo(Console.WriteLine, LogLevel.Information));
+
+string connectionString = "server=sql7.freesqldatabase.com;port=3306;database=sql7785603;user=sql7785603;password=A49JlLlHDt";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 36)),
-        opts => opts.EnableRetryOnFailure())
-    .LogTo(Console.WriteLine, LogLevel.Information));
+	options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddScoped<RepositoryManager>();
 builder.Services.AddScoped<GesVideoMatrix>();
@@ -22,10 +27,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSyncfusionBlazor();
 
-using (var db = new AppDbContext())
-{
-    db.ResetDatabase();
-}
+//using (var db = new AppDbContext())
+//{
+//    db.ResetDatabase();
+//}
 
 
 var app = builder.Build();

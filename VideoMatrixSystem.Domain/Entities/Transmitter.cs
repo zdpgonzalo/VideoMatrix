@@ -96,8 +96,27 @@ namespace VideoMatrixSystem.Domain.Entities
             }
 
             State = state;
+            UpdateTransmitter();
             SetChanges(OpResul.Line);
             return true;
+        }
+
+		/// <summary>
+		/// Toggles the device state between Active and Offline.
+		/// If the current state is not Offline, it switches to Offline; otherwise, it switches to Active.
+		/// </summary>
+		/// <returns>True if the state was successfully updated; otherwise, false.</returns>
+		public bool SwitchState()
+        {
+            if(State != DeviceState.Offline)
+            {
+                return UpdateState(DeviceState.Offline);
+            }
+            else
+            {
+                return UpdateState(DeviceState.Active);
+            }
+
         }
 
         /// <summary>
@@ -130,6 +149,7 @@ namespace VideoMatrixSystem.Domain.Entities
         public bool ClearReceivers()
         {
             Receivers.Clear();
+            UpdateTransmitter();
             SetChanges(OpResul.Page);
             return true;
 
@@ -147,6 +167,7 @@ namespace VideoMatrixSystem.Domain.Entities
             }
 
             Receivers.Add(receiver);
+            UpdateTransmitter();
             SetChanges(OpResul.Page);
             return true;
 
@@ -164,9 +185,34 @@ namespace VideoMatrixSystem.Domain.Entities
             }
 
             Receivers.Remove(receiver);
+            UpdateTransmitter();
             SetChanges(OpResul.Page);
             return true;
 
+        }
+
+		/// <summary>
+		/// Updates the transmitter state based on the number of connected receivers.
+		/// Sets the state to StandBy if there are no receivers; otherwise, sets it to Active.
+		/// Returns false if the transmitter is offline and cannot be updated.
+		/// </summary>
+		/// <returns>True if the state was updated; otherwise, false.</returns>
+		public bool UpdateTransmitter()
+        {
+            if(State == DeviceState.Offline)
+            {
+                return false;
+            }
+
+            if(Receivers.Count == 0)
+            {
+                UpdateState(DeviceState.StandBy);
+            }
+            else
+            {
+				UpdateState(DeviceState.Active);
+			}
+            return true;
         }
 
         public override string ToString()

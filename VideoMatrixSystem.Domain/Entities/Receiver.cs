@@ -16,8 +16,6 @@ namespace VideoMatrixSystem.Domain.Entities
         [Required]
         public string IP { get; private set; } = string.Empty;
 
-        public string ImageUrl { get; private set; }
-
         public int? TransmitterId { get; private set; }
 
         [ForeignKey(nameof(TransmitterId))]
@@ -33,11 +31,10 @@ namespace VideoMatrixSystem.Domain.Entities
             Transmitter = null;
         }
 
-        public Receiver(string name, string ip, string imageUrl, DeviceState state)
+        public Receiver(string name, string ip, DeviceState state)
         {
             UpdateName(name);
             UpdateIP(ip);
-            UpdateImage(imageUrl);
             UpdateState(state);
         }
 
@@ -105,6 +102,27 @@ namespace VideoMatrixSystem.Domain.Entities
             return true;
         }
 
+		/// <summary>
+		/// Turns the receiver on or off depending on its current state and transmitter presence.
+		/// </summary>
+		/// <returns>True if the state was updated successfully; otherwise, false.</returns>
+		public bool SwitchState()
+        {
+            if(State != DeviceState.Offline)
+            {
+                return UpdateState(DeviceState.Offline);
+            }
+
+            if(Transmitter != null)
+            {
+                return UpdateState(DeviceState.Active);
+            }
+            else
+            {
+				return UpdateState(DeviceState.StandBy);
+			}
+        }
+
         /// <summary>
         /// Updates the transmitter of the receiver
         /// </summary>
@@ -116,34 +134,20 @@ namespace VideoMatrixSystem.Domain.Entities
             {
                 Transmitter.RemoveReceiver(this);
             }
+            
+            if(transmitter == null && State == DeviceState.Active)
+            {
+                UpdateState(DeviceState.StandBy);
+            }
+            else if(transmitter != null && State == DeviceState.StandBy) 
+            {
+				UpdateState(DeviceState.Active);
+			}
 
             Transmitter = transmitter;
             Transmitter?.AddReceiver(this);
 
             SetChanges(OpResul.Page);
-            return true;
-        }
-
-        /// <summary>
-        /// Updates the image of the receiver
-        /// </summary>
-        /// <param name="imageUrl">New image URL for the receiver</param>
-        /// <returns>True</returns>
-        public bool UpdateImage(string? imageUrl)
-        {
-            if (ImageUrl == imageUrl)
-            {
-                SetChanges(OpResul.Cancel);
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(imageUrl))
-            {
-                //Change to empty route
-            }
-
-            ImageUrl = imageUrl;
-            SetChanges(OpResul.Line);
             return true;
         }
 
