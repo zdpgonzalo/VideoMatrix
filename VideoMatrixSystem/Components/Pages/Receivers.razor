@@ -247,13 +247,20 @@
 
 		public override void UpdateModel(OpResul dataResul)
 		{
-			var receiverList = (List<Receiver>)GetData("Receiver_GetReceivers");
-			var transmitterList = (List<Transmitter>)GetData("Transmitter_GetTransmitters");
-			var selectedReceiver = (Receiver)GetData("Receiver_GetSelectedReceiver");
+			try
+			{
+				var receiverList = (List<Receiver>)GetData("Receiver_GetReceivers");
+				var transmitterList = (List<Transmitter>)GetData("Transmitter_GetTransmitters");
+				var selectedReceiver = (Receiver)GetData("Receiver_GetSelectedReceiver");
 
-			Receivers = receiverList.Select(r => (ReceiverVM)r).ToList();
-			Transmitters = transmitterList.Select(t => (TransmitterVM)t).ToList();
-			SelectedReceiver = (ReceiverVM)selectedReceiver;
+				Receivers = receiverList.Select(r => (ReceiverVM)r).ToList();
+				Transmitters = transmitterList.Select(t => (TransmitterVM)t).ToList();
+				SelectedReceiver = (ReceiverVM)selectedReceiver;
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
 		}
 	}
 
@@ -415,9 +422,9 @@
 	/// Calls the ViewModel to create a new transmitter with the entered data, then closes the modal
 	/// </summary>
 	/// <returns></returns>
-	private async Task CreateReceiver()
+	private void CreateReceiver()
 	{
-		await ViewModel.Action("Receiver_CreateReceiver", newReceiver.Name, newReceiver.IP);
+		 ViewModel.Action("Receiver_CreateReceiver", newReceiver.Name, newReceiver.IP);
 		CloseCreateModal();
 	}
 

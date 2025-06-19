@@ -136,13 +136,21 @@
 
         public override void UpdateModel(OpResul dataResul)
         {
-            var transmitterList = (List<Transmitter>)GetData("Transmitter_GetTransmitters");
-            var receiverList = (List<Receiver>)GetData("Receiver_GetReceivers");
+            try
+            {
+                var transmitterList = (List<Transmitter>)GetData("Transmitter_GetTransmitters");
+                var receiverList = (List<Receiver>)GetData("Receiver_GetReceivers");
 
-            Transmitters = transmitterList.Select(t => (TransmitterVM)t).ToList();
-            Receivers = receiverList.Select(r => (ReceiverVM)r).ToList();
+                Transmitters = transmitterList.Select(t => (TransmitterVM)t).ToList();
+                Receivers = receiverList.Select(r => (ReceiverVM)r).ToList();
 
-            SelectedTransmitter = (TransmitterVM)((Transmitter)GetData("Transmitter_GetSelectedTransmitter"));
+                SelectedTransmitter = (TransmitterVM)((Transmitter)GetData("Transmitter_GetSelectedTransmitter"));
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
         }
     }
 

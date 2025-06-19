@@ -104,14 +104,14 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
 								{
 									reciver.UpdateTransmitter(null);
 								}
-								repositoryManager.TransmittersRepository.DeleteAsync(GetTransmitter(SelectedTransmitterId));
-                                context.SaveChangesAsync();
+								repositoryManager.TransmittersRepository.Delete(GetTransmitter(SelectedTransmitterId));
+                                context.SaveChanges();
 								return true;
 
 							case Actions.CreateTransmitter:
 								Transmitter newTransmitter = new Transmitter(info[0].ToString(), info[1].ToString(), info[2].ToString(), DeviceState.Offline);
-								repositoryManager.TransmittersRepository.AddAsync(newTransmitter);
-                                context.SaveChangesAsync();
+								repositoryManager.TransmittersRepository.Add(newTransmitter);
+                                context.SaveChanges();
 								return true;
 
 							case Actions.SwitchState:
@@ -140,14 +140,14 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
 
 							case Actions.CreateReceiver:
 								Receiver newReceiver = new Receiver(info[0].ToString(), info[1].ToString(), DeviceState.Offline);
-								repositoryManager.ReceiverRepository.AddAsync(newReceiver);
+								repositoryManager.ReceiverRepository.Add(newReceiver);
 								return true;
 
 							case Actions.DeleteReceiver:
 								SelectedReceiverId = Convert.ToInt32(info[0]);
 								receiver = GetReceiver(SelectedReceiverId);
 								if (receiver == null) return false;
-								repositoryManager.ReceiverRepository.DeleteAsync(receiver);
+								repositoryManager.ReceiverRepository.Delete(receiver);
                                 return true;
 
 							case Actions.SwitchState:

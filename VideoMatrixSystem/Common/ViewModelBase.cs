@@ -79,7 +79,7 @@ namespace VideoMatrixSystem.Common
 
                 if (DataRefer != null)
                 {
-                    resul = await DataRefer.Action(oper, values);
+                    resul =  DataRefer.Action(oper, values);
 
                     if (resul != null)
                     {

@@ -13,7 +13,7 @@ namespace VideoMatrixSystem.Domain.Repository
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<bool> AddAsync(Transmitter entity)
+        public  bool Add(Transmitter entity)
         {
             if (entity == null)
                 return false;
@@ -23,8 +23,8 @@ namespace VideoMatrixSystem.Domain.Repository
 
             try
             {
-                await _context.AddAsync(entity);
-                await _context.SaveChangesAsync();
+                 _context.Add(entity);
+                 _context.SaveChanges();
             }
             catch (Exception ex) 
             {
@@ -34,7 +34,7 @@ namespace VideoMatrixSystem.Domain.Repository
             return true;
         }
 
-        public async Task<bool> AddRangeAsync(List<Transmitter> transmitters)
+        public  bool AddRange(List<Transmitter> transmitters)
         {
             if (transmitters == null)
                 return false;
@@ -43,8 +43,8 @@ namespace VideoMatrixSystem.Domain.Repository
 
             try
             {
-                await _context.AddRangeAsync(transmitters);
-                await _context.SaveChangesAsync();
+                 _context.AddRange(transmitters);
+                 _context.SaveChanges();
             }
             catch (Exception ex) 
             {
@@ -54,7 +54,7 @@ namespace VideoMatrixSystem.Domain.Repository
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Transmitter entity)
+        public  bool Delete(Transmitter entity)
         {
             if (entity == null)
                 return false;
@@ -62,7 +62,7 @@ namespace VideoMatrixSystem.Domain.Repository
             try
             {
                 _context.Remove(entity);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
             }
             catch (Exception ex) 
             {
@@ -72,7 +72,7 @@ namespace VideoMatrixSystem.Domain.Repository
             return true;
         }
 
-        public async Task<bool> DeleteRangeAsync(List<Transmitter> entities)
+        public  bool DeleteRange(List<Transmitter> entities)
         {
             if (entities == null)
                 return false;
@@ -80,7 +80,7 @@ namespace VideoMatrixSystem.Domain.Repository
             try
             {
                 _context.RemoveRange(entities);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -94,10 +94,10 @@ namespace VideoMatrixSystem.Domain.Repository
         {
             InitializeDatabase();
 
-            return _context.Transmitters.Include(t => t.Receivers).ToList();
+            return  _context.Transmitters.Include(t => t.Receivers).ToList();
         }
 
-        private async void InitializeDatabase()
+        private  void InitializeDatabase()
         {
             try
             {
@@ -125,7 +125,7 @@ namespace VideoMatrixSystem.Domain.Repository
                     new Transmitter("T15", "10.10.10.13", "https://anave.es/wp-content/uploads/2024/08/fo-bajamar-express.jpg", Common.DeviceState.Offline),
                 };
 
-                await AddRangeAsync(transmitters);
+                 AddRange(transmitters);
 
                 return;
             }
@@ -145,17 +145,17 @@ namespace VideoMatrixSystem.Domain.Repository
             return !string.IsNullOrEmpty(entity?.Name);
         }
 
-        public async Task SaveChangesAsync()
+        public void SaveChanges()
         {
-            await _context.SaveChangesAsync();
+             _context.SaveChanges();
         }
 
-        public async Task<bool> UpdateAsync(Transmitter entity)
+        public  bool Update(Transmitter entity)
         {
             try
             {
                 _context.Update(entity);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
                 return true;
             }
             catch (Exception ex) 
@@ -164,12 +164,12 @@ namespace VideoMatrixSystem.Domain.Repository
             }
         }
 
-        public async Task<bool> UpdateRangeAsync(List<Transmitter> entities)
+        public  bool UpdateRange(List<Transmitter> entities)
         {
             try
             {
                 _context.UpdateRange(entities);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
                 return true;
             }
             catch (Exception ex)

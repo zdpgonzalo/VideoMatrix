@@ -13,7 +13,7 @@ namespace VideoMatrixSystem.Domain.Repository
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<bool> AddAsync(Receiver entity)
+        public  bool Add(Receiver entity)
         {
             if (entity == null)
                 return false;
@@ -23,8 +23,8 @@ namespace VideoMatrixSystem.Domain.Repository
 
             try
             {
-                await _context.AddAsync(entity);
-                await _context.SaveChangesAsync();
+                 _context.Add(entity);
+                 _context.SaveChanges();
             }
             catch (Exception ex) 
             {
@@ -34,7 +34,7 @@ namespace VideoMatrixSystem.Domain.Repository
             return true;
         }
 
-        public async Task<bool> AddRangeAsync(List<Receiver> transmitters)
+        public  bool AddRange(List<Receiver> transmitters)
         {
             if (transmitters == null)
                 return false;
@@ -43,8 +43,8 @@ namespace VideoMatrixSystem.Domain.Repository
 
             try
             {
-                await _context.AddRangeAsync(transmitters);
-                await _context.SaveChangesAsync();
+                 _context.AddRange(transmitters);
+                 _context.SaveChanges();
             }
             catch (Exception ex) 
             {
@@ -54,7 +54,7 @@ namespace VideoMatrixSystem.Domain.Repository
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Receiver entity)
+        public  bool Delete(Receiver entity)
         {
             if (entity == null)
                 return false;
@@ -62,7 +62,7 @@ namespace VideoMatrixSystem.Domain.Repository
             try
             {
                 _context.Remove(entity);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
             }
             catch (Exception ex) 
             {
@@ -72,7 +72,7 @@ namespace VideoMatrixSystem.Domain.Repository
             return true;
         }
 
-        public async Task<bool> DeleteRangeAsync(List<Receiver> entities)
+        public  bool DeleteRange(List<Receiver> entities)
         {
             if (entities == null)
                 return false;
@@ -80,7 +80,7 @@ namespace VideoMatrixSystem.Domain.Repository
             try
             {
                 _context.RemoveRange(entities);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -92,48 +92,49 @@ namespace VideoMatrixSystem.Domain.Repository
 
         public List<Receiver> GetAll()
         {
-            InitializeDatabase();
+             InitializeDatabase();
 
-            return _context.Receivers.Include(r => r.Transmitter).ToList();
-        }
+			return  _context.Receivers.Include(r => r.Transmitter).ToList();
+		}
 
-        private async void InitializeDatabase()
+        private void InitializeDatabase()
         {
-            try
-            {
-                if (_context.Receivers.Count() > 0)
-                {
-                    return;
-                }
+			try
+			{
+				if (_context.Receivers.Count() > 0)
+				{
+					return;
+				}
 
-                List<Receiver> receivers = new List<Receiver>()
-                {
+				List<Receiver> receivers = new List<Receiver>()
+				{
 					new Receiver("R01", "1.2.3.4", Common.DeviceState.Offline),
-                    new Receiver("R02", "432.23.2", Common.DeviceState.StandBy),
-                    new Receiver("R03", "123.54.6", Common.DeviceState.StandBy),
-                    new Receiver("R04", "532.63.3", Common.DeviceState.StandBy),
-                    new Receiver("R05", "16.53.12", Common.DeviceState.Offline),
-                    new Receiver("R06", "192.168.1.10", Common.DeviceState.Offline),
-                    new Receiver("R07", "10.0.0.23", Common.DeviceState.StandBy),
-                    new Receiver("R08", "172.16.5.6", Common.DeviceState.StandBy),
-                    new Receiver("R09", "192.168.0.33", Common.DeviceState.StandBy),
-                    new Receiver("R10", "10.10.10.12", Common.DeviceState.Offline),
-                    new Receiver("R11", "192.168.1.11", Common.DeviceState.Offline),
-                    new Receiver("R12", "10.0.0.24", Common.DeviceState.StandBy),
-                    new Receiver("R13", "172.16.5.7", Common.DeviceState.StandBy),
-                    new Receiver("R14", "192.168.0.34", Common.DeviceState.StandBy),
-                    new Receiver("R15", "10.10.10.13", Common.DeviceState.Offline),
+					new Receiver("R02", "432.23.2", Common.DeviceState.StandBy),
+					new Receiver("R03", "123.54.6", Common.DeviceState.StandBy),
+					new Receiver("R04", "532.63.3", Common.DeviceState.StandBy),
+					new Receiver("R05", "16.53.12", Common.DeviceState.Offline),
+					new Receiver("R06", "192.168.1.10", Common.DeviceState.Offline),
+					new Receiver("R07", "10.0.0.23", Common.DeviceState.StandBy),
+					new Receiver("R08", "172.16.5.6", Common.DeviceState.StandBy),
+					new Receiver("R09", "192.168.0.33", Common.DeviceState.StandBy),
+					new Receiver("R10", "10.10.10.12", Common.DeviceState.Offline),
+					new Receiver("R11", "192.168.1.11", Common.DeviceState.Offline),
+					new Receiver("R12", "10.0.0.24", Common.DeviceState.StandBy),
+					new Receiver("R13", "172.16.5.7", Common.DeviceState.StandBy),
+					new Receiver("R14", "192.168.0.34", Common.DeviceState.StandBy),
+					new Receiver("R15", "10.10.10.13", Common.DeviceState.Offline),
 
 				};
 
-                await AddRangeAsync(receivers);
+				 AddRange(receivers);
 
-                return;
-            }
-            catch (Exception ex)
-            {
-                return;
-            }
+				return;
+			}
+			catch (Exception ex)
+			{
+				return;
+			}
+            
         }
 
         public Receiver? GetById(int id)
@@ -146,17 +147,17 @@ namespace VideoMatrixSystem.Domain.Repository
             return !string.IsNullOrEmpty(entity?.Name);
         }
 
-        public async Task SaveChangesAsync()
+        public void SaveChanges()
         {
-            await _context.SaveChangesAsync();
+             _context.SaveChanges();
         }
 
-        public async Task<bool> UpdateAsync(Receiver entity)
+        public  bool Update(Receiver entity)
         {
             try
             {
                 _context.Update(entity);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
                 return true;
             }
             catch (Exception ex) 
@@ -165,12 +166,12 @@ namespace VideoMatrixSystem.Domain.Repository
             }
         }
 
-        public async Task<bool> UpdateRangeAsync(List<Receiver> entities)
+        public  bool UpdateRange(List<Receiver> entities)
         {
             try
             {
                 _context.UpdateRange(entities);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
                 return true;
             }
             catch (Exception ex)

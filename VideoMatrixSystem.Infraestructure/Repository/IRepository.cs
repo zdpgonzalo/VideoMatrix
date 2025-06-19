@@ -9,42 +9,42 @@ namespace VideoMatrixSystem.Domain.Repository
         /// </summary>
         /// <param name="entity">The entity to add</param>
         /// <returns>True if the entity was added successfully; otherwise False</returns>
-        public Task<bool> AddAsync(T entity);
+        public bool Add(T entity);
 
         /// <summary>
         /// Adds a list of entities to the repository
         /// </summary>
         /// <param name="entities">List of entities to add</param>
         /// <returns>True if the entities were added successfully, otherwise false</returns>
-        public Task<bool> AddRangeAsync(List<T> entities);
+        public bool AddRange(List<T> entities);
 
         /// <summary>
         /// Updates an entity in the repository
         /// </summary>
         /// <param name="entity">The entity to update</param>
         /// <returns>True if the entity was updated successfully; otherwise False</returns>
-        public Task<bool> UpdateAsync(T entity);
+        public bool Update(T entity);
 
         /// <summary>
         /// Updates a list of entities in the repository
         /// </summary>
         /// <param name="entities">List of entities to update</param>
         /// <returns>True if the entities were updated succesfully; otherwise false</returns>
-        public Task<bool> UpdateRangeAsync(List<T> entities);
+        public bool UpdateRange(List<T> entities);
 
         /// <summary>
         /// Deletes an entity from the repository
         /// </summary>
         /// <param name="entity">The entity to delete</param>
         /// <returns>True if the entity was deleted successfully; otherwise false</returns>
-        public Task<bool> DeleteAsync(T entity);
+        public bool Delete(T entity);
 
         /// <summary>
         /// Removes a list of entities from the repository.
         /// </summary>
         /// <param name="entities">List of entities to remove</param>
         /// <returns>True if the entities were removed successfully; otherwise false</returns>
-        public Task<bool> DeleteRangeAsync(List<T> entities);
+        public bool DeleteRange(List<T> entities);
 
         /// <summary>
         /// Retrieves all the entities in the repository
@@ -69,6 +69,6 @@ namespace VideoMatrixSystem.Domain.Repository
         /// <summary>
         /// Save the changes in the database
         /// </summary>
-        public Task SaveChangesAsync();
+        public void SaveChanges();
     }
 }

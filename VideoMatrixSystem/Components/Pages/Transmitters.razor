@@ -197,11 +197,19 @@
 
 		public override void UpdateModel(OpResul dataResul)
 		{
-			var transmitterList = (List<Transmitter>)GetData("Transmitter_GetTransmitters");
-			var selectedTransmitter = (Transmitter)GetData("Transmitter_GetSelectedTransmitter");
+			try
+			{
+				var transmitterList = (List<Transmitter>)GetData("Transmitter_GetTransmitters");
+				var selectedTransmitter = (Transmitter)GetData("Transmitter_GetSelectedTransmitter");
 
-			Transmitters = transmitterList.Select(r => (TransmitterVM)r).ToList();
-			SelectedTransmitter = (TransmitterVM)selectedTransmitter;
+				Transmitters = transmitterList.Select(r => (TransmitterVM)r).ToList();
+				SelectedTransmitter = (TransmitterVM)selectedTransmitter;
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+
 		}
 	}
 
@@ -339,9 +347,9 @@
 	/// Calls the ViewModel to create a new transmitter with the entered data, then closes the modal
 	/// </summary>
 	/// <returns></returns>
-	private async Task CreateTransmitter()
+	private void CreateTransmitter()
 	{
-		await ViewModel.Action("Transmitter_CreateTransmitter", NewTransmitter.Name, NewTransmitter.IP, NewTransmitter.ImageUrl);
+		 ViewModel.Action("Transmitter_CreateTransmitter", NewTransmitter.Name, NewTransmitter.IP, NewTransmitter.ImageUrl);
 		CloseCreateModal();
 	}
 

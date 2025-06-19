@@ -56,21 +56,6 @@ namespace VideoMatrixSystem.Domain.Context
             }
         }
 
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-        {
-            lock (ContextLock)
-            {
-                try
-                {
-                    return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-            }
-        }
-
         public override int SaveChanges()
         {
             lock (ContextLock)
