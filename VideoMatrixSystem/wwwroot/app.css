@@ -325,6 +325,23 @@ h1:focus {
             color: white;
         }
 
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1;
+}
+
+.delete-icon {
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+}
+
+.delete-button:hover img {
+    background: url('delete-hover.png');
+}
+
 .transmitter-selector {
     margin-top: 1rem;
     flex-direction: column;
@@ -337,3 +354,20 @@ h1:focus {
         border: 1px solid #ccc;
         font-size: 1rem;
     }
+
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px; /* espacio entre filas */
+}
+
+    .form-row label {
+        width: 120px; /* ancho fijo para alinear todos */
+        margin-right: 8px;
+    }
+
+    .form-row input {
+        flex: 1; /* que el input ocupe el resto del espacio */
+        padding: 4px 8px;
+    }
+

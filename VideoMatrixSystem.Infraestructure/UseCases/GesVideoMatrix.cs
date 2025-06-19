@@ -51,9 +51,18 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
         public enum Actions
         {
             None,
+
             SwitchState,
+
             SelectTransmitter,
             SelectReceiver,
+
+            CreateReceiver,
+            DeleteReceiver,
+
+            DeleteTransmitter,
+            CreateTransmitter,
+
             ChangeReceiverTransmitter
         }
 
@@ -90,7 +99,22 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
                                 SelectedTransmitterId = Convert.ToInt32(info[0]);
                                 return true;
 
-                            case Actions.SwitchState:
+							case Actions.DeleteTransmitter:
+								foreach (var reciver in SelectedTransmitter.Receivers)
+								{
+									reciver.UpdateTransmitter(null);
+								}
+								repositoryManager.TransmittersRepository.DeleteAsync(GetTransmitter(SelectedTransmitterId));
+                                context.SaveChangesAsync();
+								return true;
+
+							case Actions.CreateTransmitter:
+								Transmitter newTransmitter = new Transmitter(info[0].ToString(), info[1].ToString(), info[2].ToString(), DeviceState.Offline);
+								repositoryManager.TransmittersRepository.AddAsync(newTransmitter);
+                                context.SaveChangesAsync();
+								return true;
+
+							case Actions.SwitchState:
                                 if (SelectedTransmitter == null)
                                     return false;
                                 return SelectedTransmitter.SwitchState();
@@ -100,21 +124,7 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
                         }
 
                     case Tables.Receiver:
-                        SelectedReceiverId = Convert.ToInt32(info[0]);
-                        Receiver? receiver = GetReceiver(SelectedReceiverId);
-						try
-						{
-							var usuarios = context.Transmitters.ToList();
-
-						}
-						catch (Exception ex)
-						{
-							Console.WriteLine("❌ Error de conexión: " + ex.Message);
-						}
-						if (receiver == null)
-                        {
-                            return false;
-                        }
+                        Receiver? receiver = null;
 
                         switch (oper)
                         {
@@ -123,12 +133,27 @@ namespace VideoMatrixSystem.Infraestructure.UseCases
 								return true;
 
 							case Actions.ChangeReceiverTransmitter:
-                                Transmitter? transmitter = GetTransmitter(Convert.ToInt32(info[1]));
-                                return receiver.UpdateTransmitter(transmitter);
+								SelectedReceiverId = Convert.ToInt32(info[0]);
+								receiver = GetReceiver(SelectedReceiverId);
+								Transmitter? transmitter = GetTransmitter(Convert.ToInt32(info[1]));
+                                return receiver?.UpdateTransmitter(transmitter);
+
+							case Actions.CreateReceiver:
+								Receiver newReceiver = new Receiver(info[0].ToString(), info[1].ToString(), DeviceState.Offline);
+								repositoryManager.ReceiverRepository.AddAsync(newReceiver);
+								return true;
+
+							case Actions.DeleteReceiver:
+								SelectedReceiverId = Convert.ToInt32(info[0]);
+								receiver = GetReceiver(SelectedReceiverId);
+								if (receiver == null) return false;
+								repositoryManager.ReceiverRepository.DeleteAsync(receiver);
+                                return true;
 
 							case Actions.SwitchState:
-								if (receiver == null)
-									return false;
+								SelectedReceiverId = Convert.ToInt32(info[0]);
+								receiver = GetReceiver(SelectedReceiverId);
+								if (receiver == null) return false;
 								return receiver.SwitchState();
 
 							default:

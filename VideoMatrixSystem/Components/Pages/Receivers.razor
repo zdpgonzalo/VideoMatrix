@@ -9,26 +9,36 @@
 
 <div class="receiver-page">
 
-	<!--Filter dropdown-->
-	<div class="filter-dropdown">
-		<button class="filter-toggle" @onclick="() => showFilters = !showFilters">
-			Filtrar por estado
+	<!--Filters + Create buttons-->
+	<div style="display: flex; align-items: center; margin-bottom: 1rem; gap: 1rem;">
+
+		<!--Filter dropdown-->
+		<div class="filter-dropdown">
+			<button class="filter-toggle" @onclick="() => showFilters = !showFilters">
+				Filtrar por estado
+			</button>
+
+			@if (showFilters)
+			{
+				<div class="filter-options">
+					@foreach (var state in StateFilters.Keys)
+					{
+						<label>
+							<input type="checkbox"
+								   checked="@StateFilters[state]"
+								   @onchange="(e) => OnFilterChanged(state, e.Value)" />
+							@GetStatusName(state)
+						</label>
+					}
+				</div>
+			}
+		</div>
+
+		<!--CreateButton-->
+		<button class="create-button" @onclick="OpenCreateModal" style="margin-bottom: 0.5rem;">
+			Crear
 		</button>
 
-		@if (showFilters)
-		{
-			<div class="filter-options">
-				@foreach (var state in StateFilters.Keys)
-				{
-					<label style="filter-options label">
-						<input type="checkbox"
-							   checked="@StateFilters[state]"
-							   @onchange="(e) => OnFilterChanged(state, e.Value)" />
-						@GetStatusName(state)
-					</label>
-				}
-			</div>
-		}
 	</div>
 
 	<!--Receiver grid-->
@@ -58,7 +68,15 @@
 	{
 		<div class="modal-backdrop" @onclick="CloseModal">
 			<div class="modal-content" @onclick:stopPropagation="true">
-				<h2>@ViewModel.SelectedReceiver.Name</h2>
+
+				<!--Header info-->
+				<div style="display: flex; justify-content: space-between; align-items: center;">
+					<h2>@ViewModel.SelectedReceiver.Name</h2>
+					<button @onclick="DeleteReceiver" class="delete-button" title="Eliminar receptor" style="background: none; border: none; cursor: pointer;">
+						<img class="delete-icon" src="delete.png" alt="Eliminar" />
+					</button>
+				</div>
+
 				<p><strong>Estado:</strong> @GetStatusName(ViewModel.SelectedReceiver.State)</p>
 				<p><strong>IP:</strong> @ViewModel.SelectedReceiver.IP</p>
 				<img src="@GetReceiverImage(ViewModel.SelectedReceiver)" class="receiver-image" />
@@ -81,6 +99,37 @@
 				</div>
 
 				<button @onclick="CloseModal">Cerrar</button>
+			</div>
+		</div>
+	}
+
+	<!--Create modal-->
+	@if (IsCreateModalOpen)
+	{
+		<div class="modal-backdrop" @onclick="CloseCreateModal">
+			<div class="modal-content" @onclick:stopPropagation="true">
+
+				<!--Header-->
+				<h2>Crear Transmisor</h2>
+
+				<div style="display: flex;flex-direction: column;gap:5px;">
+					<div class="form-row">
+						<label><strong>Nombre:</strong></label>
+						<input type="text" @bind="newReceiver.Name" />
+					</div>
+
+					<div class="form-row">
+						<label><strong>IP:</strong></label>
+						<input type="text" @bind="newReceiver.IP" />
+					</div>
+				</div>
+
+				<!--Buttons-->
+				<div style="margin-top: 1rem;">
+					<button @onclick="CreateReceiver">Guardar</button>
+					<button @onclick="CloseCreateModal">Cancelar</button>
+				</div>
+
 			</div>
 		</div>
 	}
@@ -313,6 +362,10 @@
 		ViewModel.Action("Receiver_SwitchState", ViewModel.SelectedReceiver.Id);
 	}
 
+	/// <summary>
+	/// Updates the transmitter of the receiver
+	/// </summary>
+	/// <param name="e"></param>
 	private void OnTransmitterChange(ChangeEventArgs e)
 	{
 		if (int.TryParse(e.Value?.ToString(), out int transmitterId))
@@ -324,5 +377,49 @@
 			}
 		}
 	}
+
+	/// <summary>
+	/// Deletes the selected receiver from the database
+	/// </summary>
+	private void DeleteReceiver()
+	{
+		ViewModel.Action("Receiver_DeleteReceiver", ViewModel.SelectedReceiver?.Id);
+		CloseModal();
+	}
+	#endregion
+
+	#region Create receiver
+
+	private bool IsCreateModalOpen = false;
+
+	private ReceiverPresentationVM.ReceiverVM newReceiver = new();
+
+	/// <summary>
+	/// Opens the modal for creating a new transmitter
+	/// </summary>
+	private void OpenCreateModal()
+	{
+		IsCreateModalOpen = true;
+		newReceiver = new();
+	}
+
+	/// <summary>
+	/// Closes the create transmitter modal
+	/// </summary>
+	private void CloseCreateModal()
+	{
+		IsCreateModalOpen = false;
+	}
+
+	/// <summary>
+	/// Calls the ViewModel to create a new transmitter with the entered data, then closes the modal
+	/// </summary>
+	/// <returns></returns>
+	private async Task CreateReceiver()
+	{
+		await ViewModel.Action("Receiver_CreateReceiver", newReceiver.Name, newReceiver.IP);
+		CloseCreateModal();
+	}
+
 	#endregion
 }
